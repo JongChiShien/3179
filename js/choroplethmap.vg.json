@@ -1,0 +1,72 @@
+{
+    "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+    "title": {
+        "text": "Poverty Across Malaysian States (2022)",
+        "fontSize": 14
+    }, 
+    "width": 1100,
+    "height": 500, 
+    "projection": {"type": "mercator"},
+    "layer":[{
+        "data": {
+            "url": "https://raw.githubusercontent.com/jnewbery/CartogramMalaysia/9ac25c828e0306dfa2c2869f98eb2b357da69764/public/data/malaysia-states.topojson",  
+            "format": {"type": "topojson", "feature": "states"}
+        },
+        "transform": [
+            {
+                "lookup": "properties.Name", 
+                "from": {
+                    "data": {
+                        "url": "poverty_state.csv"
+                    }, 
+                    "key": "state", 
+                    "fields": ["poverty"]
+                }
+            }, 
+            {
+                "filter": "datum['properties.Name'] != 'Kuala Lumpur' && datum['properties.Name'] != 'Labuan'"  
+            },
+            {
+                "calculate": "(datum.poverty - 1.4)/(19.7 - 1.4)",
+                "as": "poverty_norm"
+            }
+        ],
+        "mark": {
+            "type": "geoshape",
+            "stroke": "#656565",
+            "strokeWidth": 0.5
+        }, 
+        "encoding": {
+            "color": {
+                "field": "poverty_norm", 
+                "type": "quantitative", 
+                "scale": {"scheme": "browns"},
+            "legend": {
+                "title": "Normalized Poverty", 
+                "offset": 50
+            }},
+            "tooltip": [
+                {"field": "properties.Name", "type": "nominal", "title": "State"}, 
+                {"field": "poverty", "type": "quantitative", "title": "Poverty Rate (%)"},
+                {"field": "poverty_norm", "type": "quantitative", "title": "Normalized Poverty", "format": ".2f"}
+            ]
+        }
+    }, 
+    {
+        "data": {
+            "url": "poverty_state.csv"
+        }, 
+        "transform": [
+            {
+                "filter": "datum.state != 'Kuala Lumpur'"
+            }
+        ],
+        "mark": {"type": "text", "fontWeight": "bold"}, 
+        "encoding": {
+            "longitude": {"field": "longitude", "type": "quantitative"},
+            "latitude": {"field": "latitude", "type": "quantitative"}, 
+            "text": {"field": "state", "type": "nominal"}
+        }
+    }
+]
+}
