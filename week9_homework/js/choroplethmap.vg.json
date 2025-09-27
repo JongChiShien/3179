@@ -24,13 +24,10 @@
                 }
             }, 
             {
-                "window": [
-                    {"op": "min", "field": "poverty", "as": "poverty_min"},
-                    {"op": "max", "field": "poverty", "as": "poverty_max"}
-                ]
+                "filter": "datum['properties.Name'] != 'Kuala Lumpur' && datum['properties.Name'] != 'Labuan'"  
             },
             {
-                "calculate": "(datum.poverty - datum.poverty_min)/(datum.poverty_max - datum.poverty_min)",
+                "calculate": "(datum.poverty - 1.4)/(19.7 - 1.4)",
                 "as": "poverty_norm"
             }
         ],
